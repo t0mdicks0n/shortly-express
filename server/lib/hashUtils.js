@@ -9,12 +9,13 @@ var sha512 = function(password, tempKey){
     hash.update(password);
 
     var value = hash.digest('hex');
-    console.log(value)
     return value;
     // return {
     //     tempKey:tempKey,
     //     passwordHash:value
     // };
 };
+
+
 
 module.exports.hashfunc = sha512;

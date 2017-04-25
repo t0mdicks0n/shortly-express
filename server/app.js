@@ -5,6 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const cookieParser = require('./middleware/cookieParser');
 
 const app = express();
 
@@ -17,7 +18,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files from ../public directory
 app.use(express.static(path.join(__dirname, '../public')));
-
+// create cookies
+app.use(cookieParser);
+// check cookies
+app.use(Auth.createSession);
 
 app.get('/', 
 (req, res) => {
@@ -80,23 +84,43 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 app.post('/signup', (req, res, next) => {
+  // console.log('!!!!!!!!!!!!!!!', req);
 
-  console.log('get', models.Users.get(['username = ' + req.body.username] + ';'));
+  var hashedPass = utils.hashfunc(req.body.password, 'jim');
 
-  if (JSON.stringify(models.Users.get(['username = ' + req.body.username])) === {}) {
-    res.status(200).send(req.body);
-    var hashedPass = utils.hashfunc(req.body.password, 'jim');
+  models.Users.create({
+    username: req.body.username,
+    password: hashedPass
+  })
+  .then(placeholder => {
+    // res.status(200).send(placeholder);
+    res.status(200).redirect('/');
+  })
+  .error(error => {
+    res.redirect('/signup');
+  });  
+});
 
-    return models.Users.create({
-      username: req.body.username,
-      password: hashedPass
-    });
-  } else {
-    console.log('Im redirecting!!!!!!!!!!!')
-    res.render('/signup');
-  }
+app.post('/login', (req, res, next) => {
+
+  var hashedPass = utils.hashfunc(req.body.password, 'jim');
+
+  models.Users.get({
+    username: req.body.username,
+    password: hashedPass
+  })
+  .then(results => {
+    console.log(results);
+    if (results) {
+      res.status(200).redirect('/');
+    } else {
+      res.redirect('/login');
+    }
+  })
+  .error(error => {
+    res.status(500).send(error);
+  })
 })
-
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
