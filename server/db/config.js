@@ -28,7 +28,19 @@ module.exports = (db) => {
   /************************************************************/
   /*          Add additional schema queries here              */
   /************************************************************/
-
+    .then(() => {
+      return db.queryAsync('DROP TABLE IF EXISTS users;');
+    })
+    .then(() => {
+      return db.queryAsync(`
+        CREATE TABLE IF NOT EXISTS users (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(24),
+        password VARCHAR(300),
+        timestamp TIMESTAMP,
+        UNIQUE (username)
+        );`)
+    })
     .error(err => {
       console.log(err);
     });

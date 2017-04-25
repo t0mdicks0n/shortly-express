@@ -79,7 +79,23 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.post('/signup', (req, res, next) => {
 
+  console.log('get', models.Users.get(['username = ' + req.body.username] + ';'));
+
+  if (JSON.stringify(models.Users.get(['username = ' + req.body.username])) === {}) {
+    res.status(200).send(req.body);
+    var hashedPass = utils.hashfunc(req.body.password, 'jim');
+
+    return models.Users.create({
+      username: req.body.username,
+      password: hashedPass
+    });
+  } else {
+    console.log('Im redirecting!!!!!!!!!!!')
+    res.render('/signup');
+  }
+})
 
 
 /************************************************************/
