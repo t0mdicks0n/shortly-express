@@ -18,10 +18,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files from ../public directory
 app.use(express.static(path.join(__dirname, '../public')));
-// create cookies
+// parsing cookies
 app.use(cookieParser);
-// check cookies
+// // set cookies
 app.use(Auth.createSession);
+// check cookies 
+app.use(Auth.checkCookie);
 
 app.get('/', 
 (req, res) => {
@@ -32,6 +34,17 @@ app.get('/create',
 (req, res) => {
   res.render('index');
 });
+
+app.get('/signup',
+  (req, res) => {
+    res.render('signup');
+  });
+
+app.get('/login',
+  (req, res) => {
+    res.render('login');
+  });
+
 
 app.get('/links', 
 (req, res, next) => {
@@ -94,6 +107,7 @@ app.post('/signup', (req, res, next) => {
   })
   .then(placeholder => {
     // res.status(200).send(placeholder);
+    res.cookie('success', req.body.username);
     res.status(200).redirect('/');
   })
   .error(error => {
@@ -112,6 +126,7 @@ app.post('/login', (req, res, next) => {
   .then(results => {
     console.log(results);
     if (results) {
+
       res.status(200).redirect('/');
     } else {
       res.redirect('/login');

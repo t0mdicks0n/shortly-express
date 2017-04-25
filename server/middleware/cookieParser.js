@@ -6,6 +6,7 @@ const parseCookies = (req, res, next) => {
       return cookie.split('=');
     });
     cookieCrumbles.forEach(function(cookie, index, arr) {
+      req.cookies = req.cookies || {};
       req['cookies'][cookie[0]] = cookie[1];
     });
   }
