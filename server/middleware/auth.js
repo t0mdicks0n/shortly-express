@@ -3,9 +3,16 @@ const Promise = require('bluebird');
 const utils = require('../lib/hashUtils');
 
 module.exports.createSession = (req, res, next) => {
-  if (JSON.stringify(req.cookies) !== JSON.stringify({})) {
+  if (req.cookies && JSON.stringify(req.cookies) !== JSON.stringify({})) {
     // console.log('cookies!!!!!!!!!', req.cookies);
-    req.session = { hash: 'req.cookies[shortlyid]' };
+    console.log('!!!!!!!!', req.cookies)
+    models.Sessions.get({hash: req.cookies.shortlyId})
+    .then(results => {
+      if (results) {
+        req.session = { hash: req.cookies.shortlyId };
+      }
+    })
+
 
   } else {
     var cookieHash = utils.hashfunc(Math.random().toString(), 'jim');
