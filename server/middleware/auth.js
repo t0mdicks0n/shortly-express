@@ -62,8 +62,9 @@ module.exports.checkCookie = (req, res, next) => {
       // If ok, next/accept the request/post
       models.Sessions.get({hash: req.cookies.shortlyId})
       .then(results => {
-        if (results) {
+        if (results.user_id && results.user_id !== null) {
           // req.session = { hash: req.cookies.shortlyId };
+          console.log('the id ............. ', results.user_id);
           next();
         }
       })

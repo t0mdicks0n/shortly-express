@@ -108,7 +108,7 @@ app.post('/signup', (req, res, next) => {
   .then(placeholder => {
     // res.status(200).send(placeholder);
     res.cookie('success', req.body.username);
-    res.status(200).redirect('/');
+    res.status(301).redirect('/login');
   })
   .error(error => {
     res.redirect('/signup');
