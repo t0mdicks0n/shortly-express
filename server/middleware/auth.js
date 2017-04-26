@@ -5,20 +5,21 @@ const utils = require('../lib/hashUtils');
 module.exports.createSession = (req, res, next) => {
   // on successfull signup the session in the DB get updated
   if ((req.cookies) && (req.cookies.success)) {
-    console.log('????', req.cookies)
-    models.Users.get({
-      username: req.cookies.success
-    })
-    .then(results => {
-      console.log(results);
-      return results.id;
-    })
-    .then(userID => {
-      models.Sessions.update({
-        hash: req.cookies.shortlyId,
-        user_id: userID
+
+    Promise.resolve(req.cookies.success)
+      .then(user => {
+        console.log('????', req.cookies)
+        return models.Users.get({
+          username: user
+        })
       })
-    }) 
+      .then(results => {
+        console.log('results', results);
+        return results.id;
+      })
+      .then(userID => {
+        models.Sessions.update( {hash: req.cookies.shortlyId}, {user_id: userID} )
+      })
   }
   // checks for cookie object on request
   else if (req.cookies && JSON.stringify(req.cookies) !== JSON.stringify({})) {
